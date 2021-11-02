@@ -13,6 +13,7 @@ type Webrtc struct {
 	IceIpMap   string
 	IceLite    bool
 	SinglePort int
+	LogLevel   int
 }
 
 type IceServer struct {
