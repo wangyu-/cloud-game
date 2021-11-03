@@ -374,6 +374,7 @@ func initVideo() {
 		},
 	})
 	C.bridge_context_reset(video.hw.context_reset)
+	printOpenGLDriverInfo()
 }
 
 //export deinitVideo
@@ -648,18 +649,24 @@ func videoSetPixelFormat(format uint32) C.bool {
 	switch format {
 	case C.RETRO_PIXEL_FORMAT_0RGB1555:
 		video.pixFmt = image.BitFormatShort5551
-		graphics.SetPixelFormat(graphics.UnsignedShort5551)
+		if err := graphics.SetPixelFormat(graphics.UnsignedShort5551); err != nil {
+			log.Fatalf("unknown pixel format %v", video.pixFmt)
+		}
 		video.bpp = 2
 		// format is not implemented
 		pixelFormatConverterFn = nil
 	case C.RETRO_PIXEL_FORMAT_XRGB8888:
 		video.pixFmt = image.BitFormatInt8888Rev
-		graphics.SetPixelFormat(graphics.UnsignedInt8888Rev)
+		if err := graphics.SetPixelFormat(graphics.UnsignedInt8888Rev); err != nil {
+			log.Fatalf("unknown pixel format %v", video.pixFmt)
+		}
 		video.bpp = 4
 		pixelFormatConverterFn = image.Rgba8888
 	case C.RETRO_PIXEL_FORMAT_RGB565:
 		video.pixFmt = image.BitFormatShort565
-		graphics.SetPixelFormat(graphics.UnsignedShort565)
+		if err := graphics.SetPixelFormat(graphics.UnsignedShort565); err != nil {
+			log.Fatalf("unknown pixel format %v", video.pixFmt)
+		}
 		video.bpp = 2
 		pixelFormatConverterFn = image.Rgb565
 	default:
@@ -676,4 +683,14 @@ func setRotation(rotation uint) {
 	rotationFn = image.GetRotation(video.rotation)
 	NAEmulator.meta.Rotation = rotationFn
 	log.Printf("[Env]: the game video is rotated %v°", map[uint]uint{0: 0, 1: 90, 2: 180, 3: 270}[rotation])
+}
+
+func printOpenGLDriverInfo() {
+	log.Printf("[OpenGL] Version: %v", graphics.GetGLVersionInfo())
+	log.Printf("[OpenGL] Vendor: %v", graphics.GetGLVendorInfo())
+	// This string is often the name of the GPU.
+	// In the case of Mesa3d, it would be i.e "Gallium 0.4 on NVA8".
+	// It might even say "Direct3D" if the Windows Direct3D wrapper is being used.
+	log.Printf("[OpenGL] Renderer: %v", graphics.GetGLRendererInfo())
+	log.Printf("[OpenGL] GLSL Version: %v", graphics.GetGLSLInfo())
 }

@@ -1,8 +1,6 @@
 package image
 
-import (
-	"image"
-)
+import "image"
 
 type imageCache struct {
 	image *image.RGBA

@@ -1,8 +1,6 @@
 package image
 
-import (
-	"image/color"
-)
+import "image/color"
 
 const (
 	// BIT_FORMAT_SHORT_5_5_5_1 has 5 bits R, 5 bits G, 5 bits B, 1 bit alpha
