@@ -26,3 +26,7 @@ type Config struct {
 	Encoder encoder.Encoder
 	Webrtc  Webrtc
 }
+
+func (w Webrtc) HasPortRange() bool  { return w.IcePorts.Min > 0 && w.IcePorts.Max > 0 }
+func (w Webrtc) HasSinglePort() bool { return w.SinglePort > 0 }
+func (w Webrtc) HasIceIpMap() bool   { return w.IceIpMap != "" }
